@@ -1,6 +1,6 @@
 <?php
 
-// Pull in the connection settings (DATABASE, SERVER, USERNAME, PASSWD constants)
+// Pull in the connection settings (DATABASE, SERVER, USERNAME, PASSWD, PORT constants)
 require_once __DIR__ . "/db_cred.php";
 
 // Database is the base class every "model" class (like Customer) should extend.
@@ -30,10 +30,8 @@ class Database
     public function __construct()
     {
         try {
-
-            // PDO is PHP's built-in database access layer. The first
-            // argument is the DSN (Data Source Name) - it tells PDO
-            // which driver, host and database to use.
+            // PDO is PHP's built-in database access layer. The DSN includes
+            // the host, port, dbname, and charset.
             $this->conn = new PDO(
                 "mysql:host={$this->host};port={$this->port};dbname={$this->dbname};charset=utf8mb4",
                 $this->username,$this->password
@@ -47,11 +45,9 @@ class Database
             );
 
         } catch (PDOException $e) {
-
             // If the connection fails (wrong credentials, MySQL not
             // running, etc.) stop the script and show why.
             die("Database connection failed: " . $e->getMessage());
-
         }
     }
 

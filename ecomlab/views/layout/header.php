@@ -41,17 +41,16 @@ require_once __DIR__ . '/../../core/core.php';
 
 <header class="navbar">
     <div class="brand">
-        <a href="/ecomlab/ecomlab/index.php" style="margin-left: 0; font-size: 1.2rem; font-weight: bold;">TanShop
-        </a>
+        <a href="<?= BASE_URL; ?>/index.php" style="margin-left: 0; font-size: 1.2rem; font-weight: bold;">TanShop</a>
     </div>
     <nav class="nav-links">
         <?php if (is_logged_in()): ?>
             <span class="welcome-text">Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'User'); ?>!</span>
-            <a href="/ecomlab/ecomlab/views/account/my_account.php">My Account</a>
-            <a href="/ecomlab/ecomlab/actions/logout_action.php">Logout</a>
+            <a href="<?= BASE_URL; ?>/views/account/my_account.php">My Account</a>
+            <a href="<?= BASE_URL; ?>/actions/logout_action.php">Logout</a>
         <?php else: ?>
-            <a href="/ecomlab/ecomlab/views/register.php">Register</a>
-            <a href="/ecomlab/ecomlab/views/login.php">Login</a>
+            <a href="<?= BASE_URL; ?>/views/register.php">Register</a>
+            <a href="<?= BASE_URL; ?>/views/login.php">Login</a>
         <?php endif; ?>
     </nav>
 </header>

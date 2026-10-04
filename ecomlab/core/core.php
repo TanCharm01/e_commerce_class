@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/db_cred.php';
 // Ensure session starts on every page that includes core.php
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
