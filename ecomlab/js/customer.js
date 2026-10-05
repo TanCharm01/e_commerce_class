@@ -60,6 +60,12 @@ function registerCustomer() {
 
         if (data.success) {
             document.getElementById("registerForm").reset();
+            messageEl.textContent = (data.message || "Registration successful!") + " Redirecting to login...";
+            
+            // Redirect to login.php after 1.5 seconds
+            setTimeout(function () {
+                window.location.href = "login.php";
+            }, 1500);
         }
     })
     .catch(function (error) {
@@ -68,6 +74,7 @@ function registerCustomer() {
         messageEl.innerHTML = "<div style='color:red; text-align:left; background:#fee; padding:10px; border:1px solid red;'><pre>" + error.message + "</pre></div>";
     });
 }
+
 // Real-time Password Strength Meter
 document.addEventListener("DOMContentLoaded", function () {
     var passInput = document.getElementById("customer_pass");

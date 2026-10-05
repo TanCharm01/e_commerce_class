@@ -56,4 +56,26 @@ class ProductClass extends Database {
         $sql = "SELECT * FROM categories ORDER BY cat_name ASC";
         return $this->fetchAll($sql);
     }
+    /**
+     * Fetch a single category by its primary key
+     *
+     * @param int $id
+     * @return array|false
+     */
+    public function getCategoryById($id) {
+        $sql = "SELECT * FROM categories WHERE cat_id = ? LIMIT 1";
+        return $this->fetchOne($sql, [$id]);
+    }
+
+    /**
+     * Update an existing category name
+     *
+     * @param int $id
+     * @param string $name
+     * @return bool
+     */
+    public function updateCategory($id, $name) {
+        $sql = "UPDATE categories SET cat_name = ? WHERE cat_id = ?";
+        return $this->execute($sql, [$name, $id]);
+    }
 }

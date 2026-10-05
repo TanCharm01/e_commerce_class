@@ -17,8 +17,11 @@ include __DIR__ . '/views/layout/header.php';
     <h1>This is ecom lab started</h1>
 
     <nav>
-        <a href="views/register.php">Register Customer</a> |
-        <a href="views/customers.php">View All Customers</a>
+        <a href="views/register.php">Register Customer</a>
+        
+        <?php if (function_exists('is_admin') && is_admin()): ?>
+            | <a href="views/customers.php">View All Customers</a>
+        <?php endif; ?>
     </nav>
 </main>
 

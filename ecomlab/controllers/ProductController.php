@@ -35,4 +35,11 @@ class ProductController {
     public function getAllCategories() {
         return $this->productModel->getAllCategories();
     }
+    public function getCategoryById($id) {
+        return $this->productModel->getCategoryById($id);
+    }
+
+    public function updateCategory($id, $name) {
+        return $this->productModel->updateCategory($id, $name);
+    }
 }

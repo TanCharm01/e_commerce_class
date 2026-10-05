@@ -41,5 +41,5 @@ if ($created) {
     $_SESSION['error'] = "Failed to add brand. Please try again.";
 }
 
-header("Location: " . BASE_URL . "/views/admin/brand.php");
+header("Location: " . BASE_URL . "/views/admin/dashboard.php");
 exit();

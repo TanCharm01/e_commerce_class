@@ -43,5 +43,5 @@ if ($created) {
     $_SESSION['error'] = "Failed to add category. Please try again.";
 }
 
-header("Location: " . BASE_URL . "/views/admin/category.php");
+header("Location: " . BASE_URL . "/views/admin/dashboard.php");
 exit();
