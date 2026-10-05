@@ -1,5 +1,12 @@
 <?php
-// Include the shared site header (which starts session, checks login, and renders navbar)
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+// Ensure core settings (BASE_URL, session, auth helpers) are loaded
+require_once __DIR__ . '/../core/core.php';
+
+// Include the shared site navbar header
 require_once __DIR__ . '/layout/header.php';
 ?>
 
@@ -23,7 +30,7 @@ require_once __DIR__ . '/layout/header.php';
                 <label for="customer_pass">Password</label>
                 <input type="password" name="customer_pass" id="customer_pass" placeholder="••••••••" required>
                 
-                <!-- Polished Password Strength Indicator -->
+                <!-- Password Strength Indicator -->
                 <div id="strengthContainer" class="strength-container">
                     <div class="strength-track">
                         <div id="strengthBar" class="strength-bar"></div>
@@ -64,7 +71,7 @@ require_once __DIR__ . '/layout/header.php';
         <div id="formMessage" class="form-message"></div>
 
         <div class="footer-links">
-            <span>Already have an account? <a href="<?= defined('BASE_URL') ? BASE_URL : ''; ?>/views/login.php">Login here</a></span>
+            <span>Already have an account? <a href="<?= BASE_URL; ?>/views/login.php">Login here</a></span>
         </div>
     </div>
 </main>
@@ -149,7 +156,6 @@ require_once __DIR__ . '/layout/header.php';
         box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
     }
 
-    /* Password Strength Meter */
     .strength-container {
         margin-top: 8px;
     }

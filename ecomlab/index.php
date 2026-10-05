@@ -18,7 +18,7 @@ include __DIR__ . '/views/layout/header.php';
 
     <nav>
         <a href="views/register.php">Register Customer</a> |
-        <a href="view/customers.php">View All Customers</a>
+        <a href="views/customers.php">View All Customers</a>
     </nav>
 </main>
 

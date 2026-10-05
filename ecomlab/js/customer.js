@@ -40,7 +40,7 @@ function registerCustomer() {
 
     var formData = new FormData(document.getElementById("registerForm"));
 
-    fetch("../actions/customer_register_action.php", {
+    fetch("../actions/register_action.php", {
         method: "POST",
         body: formData
     })

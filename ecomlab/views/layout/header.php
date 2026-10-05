@@ -1,56 +1,98 @@
 <?php
-// Must have 2 sets of '../' because this file is inside views/layout/
-require_once __DIR__ . '/../../core/core.php';
+// Ensure session and core functions are available
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
+}
 ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>E-Commerce Store</title>
+    <title>TanShop</title>
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
         .navbar {
-            background-color: #343a40;
-            padding: 1rem 2rem;
+            background-color: #212529;
+            color: #ffffff;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            color: #ffffff;
-            font-family: Arial, sans-serif;
+            padding: 1rem 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
         }
-        .navbar a {
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
             color: #ffffff;
             text-decoration: none;
-            margin-left: 1rem;
         }
-        .navbar a:hover {
-            text-decoration: underline;
-        }
-        .nav-links {
+        .navbar-nav {
             display: flex;
             align-items: center;
+            gap: 1.5rem;
+            list-style: none;
         }
-        .welcome-text {
-            color: #ffc107;
-            margin-right: 0.5rem;
-            font-weight: bold;
+        .navbar-nav a {
+            color: #ffffff;
+            text-decoration: none;
+            font-size: 1rem;
+            transition: color 0.2s ease;
+        }
+        .navbar-nav a:hover {
+            color: #adb5bd;
+        }
+        .welcome-msg {
+            color: #f59e0b;
+            font-weight: 600;
+        }
+        .admin-link {
+            color: #f59e0b !important;
+            font-weight: 600;
         }
     </style>
 </head>
 <body>
 
 <header class="navbar">
-    <div class="brand">
-        <a href="<?= BASE_URL; ?>/index.php" style="margin-left: 0; font-size: 1.2rem; font-weight: bold;">TanShop</a>
-    </div>
-    <nav class="nav-links">
-        <?php if (is_logged_in()): ?>
-            <span class="welcome-text">Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'User'); ?>!</span>
-            <a href="<?= BASE_URL; ?>/views/account/my_account.php">My Account</a>
-            <a href="<?= BASE_URL; ?>/actions/logout_action.php">Logout</a>
-        <?php else: ?>
-            <a href="<?= BASE_URL; ?>/views/register.php">Register</a>
-            <a href="<?= BASE_URL; ?>/views/login.php">Login</a>
-        <?php endif; ?>
+    <a href="<?= BASE_URL; ?>/index.php" class="navbar-brand">TanShop</a>
+
+    <nav>
+        <ul class="navbar-nav">
+            <?php if (function_exists('is_logged_in') && is_logged_in()): ?>
+                <!-- Rendered ONCE for any logged-in user -->
+                <li class="welcome-msg">
+                    Welcome, <?= htmlspecialchars($_SESSION['customer_name'] ?? 'Customer'); ?>!
+                </li>
+
+                <!-- Admin-only link inserted inline -->
+                <?php if (function_exists('is_admin') && is_admin()): ?>
+                    <li>
+                        <a href="<?= BASE_URL; ?>/views/admin/dashboard.php" class="admin-link">Admin Dashboard</a>
+                    </li>
+                    
+                <?php endif; ?>
+
+                <li>
+                    <a href="<?= BASE_URL; ?>/views/account/my_account.php">My Account</a>
+                </li>
+                <li>
+                    <a href="<?= BASE_URL; ?>/actions/logout_action.php">Logout</a>
+                </li>
+
+            <?php else: ?>
+                <!-- Rendered for guests -->
+                <li>
+                    <a href="<?= BASE_URL; ?>/views/register.php">Register</a>
+                </li>
+                <li>
+                    <a href="<?= BASE_URL; ?>/views/login.php">Login</a>
+                </li>
+            <?php endif; ?>
+        </ul>
     </nav>
 </header>

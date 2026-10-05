@@ -3,15 +3,12 @@
 // Flow: this page includes the functions file -> calls
 // getAllCustomersList() -> which calls the controller -> which calls
 // the model -> which runs a SELECT and returns the rows as an array.
-require_once "../functions/customer_functions.php";
-require_once __DIR__ . "/../core/core.php";
-require_admin(); // Ensure only admins can access this page
-
-
+require_once "../controllers/CustomerController.php";
 
 // $customers is now an array of associative arrays, one per customer row,
 // e.g. $customers[0]['customer_name']
-$customers = getAllCustomersList();
+$controller = new CustomerController();
+$customers = $controller->getAll();
 ?>
 <!DOCTYPE html>
 <html>
