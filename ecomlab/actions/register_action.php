@@ -9,56 +9,72 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// 1. Only run on POST requests
-if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
-    header("Location: ../views/register.php");
+// Set header so the browser/fetch knows to treat this as JSON
+header('Content-Type: application/json; charset=utf-8');
+
+// Helper function to return JSON error responses
+function sendJsonError($message) {
+    echo json_encode([
+        'success' => false,
+        'message' => $message
+    ]);
     exit();
 }
 
-// Helper function to redirect back with an error message
-function redirectWithError($message) {
-    $_SESSION['error'] = $message;
-    header("Location: ../views/register.php");
-    exit();
+// 1. Only run on POST requests
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    sendJsonError("Invalid request method.");
 }
 
 // 2. Collect and sanitize all inputs using trim() and strip_tags()
 $name    = trim(strip_tags($_POST['customer_name'] ?? ''));
 $email   = trim(strip_tags($_POST['customer_email'] ?? ''));
-$pass    = trim($_POST['customer_pass'] ?? ''); // Passwords should keep special characters
+$pass    = $_POST['customer_pass'] ?? ''; // Do not trim or strip tags; passwords can have special chars/spaces
 $country = trim(strip_tags($_POST['customer_country'] ?? ''));
 $city    = trim(strip_tags($_POST['customer_city'] ?? ''));
 $contact = trim(strip_tags($_POST['customer_contact'] ?? ''));
 $image   = null; // Image upload is optional at sign-up (NULL default)
 
 // 3. Validation: Check for empty required fields
-if (empty($name) || empty($email) || empty($pass) || empty($country) || empty($city) || empty($contact)) {
-    redirectWithError("All required fields must be filled.");
+if (empty($name) || empty($email) || empty(trim($pass)) || empty($country) || empty($city) || empty($contact)) {
+    sendJsonError("All required fields must be filled.");
 }
 
 // 4. Validate email format
 if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-    redirectWithError("Invalid email address format.");
+    sendJsonError("Invalid email address format.");
 }
 
-// 5. Validate field lengths against DB schema
+// 5. Validate Password with standard policy regex
+// - At least 8 characters
+// - At least 1 lowercase letter (?=.*[a-z])
+// - At least 1 uppercase letter (?=.*[A-Z])
+// - At least 1 number (?=.*\d)
+// - At least 1 special character (?=.*[@$!%*?&#^()_\-+=[\]{}|;:,.<>])
+$passPattern = '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#^()_\-+=[\]{}|;:,.<>])[A-Za-z\d@$!%*?&#^()_\-+=[\]{}|;:,.<>]{8,}$/';
+
+if (!preg_match($passPattern, $pass)) {
+    sendJsonError("Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character.");
+}
+
+// 6. Validate field lengths against DB schema
 if (strlen($email) > 100) {
-    redirectWithError("Email cannot exceed 100 characters.");
+    sendJsonError("Email cannot exceed 100 characters.");
 }
 if (strlen($name) > 100) {
-    redirectWithError("Full name cannot exceed 100 characters.");
+    sendJsonError("Full name cannot exceed 100 characters.");
 }
 if (strlen($country) > 50) {
-    redirectWithError("Country cannot exceed 50 characters.");
+    sendJsonError("Country cannot exceed 50 characters.");
 }
 if (strlen($city) > 50) {
-    redirectWithError("City cannot exceed 50 characters.");
+    sendJsonError("City cannot exceed 50 characters.");
 }
 if (strlen($contact) > 30) {
-    redirectWithError("Contact number cannot exceed 30 characters.");
+    sendJsonError("Contact number cannot exceed 30 characters.");
 }
 
-// 6. Bundle cleaned data and pass to CustomerController
+// 7. Bundle cleaned data and pass to CustomerController
 $data = [
     'customer_name'    => $name,
     'customer_email'   => $email,
@@ -73,16 +89,20 @@ $data = [
 $controller = new CustomerController();
 $result = $controller->register($data);
 
-// 7. Handle registration result
-if ($result['success']) {
+// 8. Handle registration result
+if (!empty($result['success'])) {
     // Populate session with authenticated customer details
-    $_SESSION['customer_id'] = $result['customer']['customer_id'];
-    $_SESSION['user_role']   = $result['customer']['user_role'];
+    if (isset($result['customer'])) {
+        $_SESSION['customer_id']   = $result['customer']['customer_id'];
+        $_SESSION['customer_name'] = $result['customer']['customer_name'] ?? $name;
+        $_SESSION['user_role']     = $result['customer']['user_role'];
+    }
 
-    // Redirect to the account dashboard
-    header("Location: ../views/account/my_account.php");
+    echo json_encode([
+        'success' => true,
+        'message' => "Registration successful! You can now log in or view your account."
+    ]);
     exit();
 } else {
-    // Store controller error in session and redirect back to register
-    redirectWithError($result['error'] ?? "Registration failed. Please try again.");
+    sendJsonError($result['error'] ?? "Registration failed. Please try again.");
 }
