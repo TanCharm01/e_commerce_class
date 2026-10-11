@@ -78,4 +78,48 @@ class ProductClass extends Database {
         $sql = "UPDATE categories SET cat_name = ? WHERE cat_id = ?";
         return $this->execute($sql, [$name, $id]);
     }
+    /**
+     * Add a new product
+     */
+    public function addProduct($cat, $brand, $title, $price, $desc, $image_filename, $keywords) {
+        $sql = "INSERT INTO products (product_cat, product_brand, product_title, product_price, product_desc, product_image, product_keywords) 
+                VALUES (?, ?, ?, ?, ?, ?, ?)";
+        return $this->execute($sql, [$cat, $brand, $title, $price, $desc, $image_filename, $keywords]);
+    }
+
+    /**
+     * Update an existing product
+     */
+    public function updateProduct($id, $cat, $brand, $title, $price, $desc, $image_filename, $keywords) {
+        $sql = "UPDATE products 
+                SET product_cat = ?, product_brand = ?, product_title = ?, product_price = ?, product_desc = ?, product_image = ?, product_keywords = ? 
+                WHERE product_id = ?";
+        return $this->execute($sql, [$cat, $brand, $title, $price, $desc, $image_filename, $keywords, $id]);
+    }
+
+    /**
+     * Fetch a single product with Category and Brand names joined
+     */
+    public function getProductById($id) {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                WHERE p.product_id = ? 
+                LIMIT 1";
+        return $this->fetchOne($sql, [$id]);
+    }
+
+    /**
+     * Fetch all products with Category and Brand names joined
+     */
+    public function getAllProducts() {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                ORDER BY p.product_id DESC";
+        return $this->fetchAll($sql);
+    }
+
 }
