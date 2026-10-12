@@ -57,4 +57,19 @@ class ProductController {
     public function getAllProducts() {
         return $this->productModel->getAllProducts();
     }
+    public function getFeaturedProducts($limit = 6) {
+        return $this->productModel->getFeaturedProducts($limit);
+    }
+
+    public function getProductsByCategory($cat_id) {
+        return $this->productModel->getProductsByCategory($cat_id);
+    }
+
+    public function getProductsByBrand($brand_id) {
+        return $this->productModel->getProductsByBrand($brand_id);
+    }
+
+    public function searchProducts($query) {
+        return $this->productModel->searchProducts($query);
+    }
 }

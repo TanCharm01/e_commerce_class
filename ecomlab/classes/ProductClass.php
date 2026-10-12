@@ -121,5 +121,62 @@ class ProductClass extends Database {
                 ORDER BY p.product_id DESC";
         return $this->fetchAll($sql);
     }
+    /**
+     * Fetch random featured products with a limit
+     */
+    public function getFeaturedProducts($limit = 6) {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                ORDER BY RAND() LIMIT " . (int)$limit;
+        $result = $this->fetchAll($sql);
+        return $result ? $result : [];
+    }
+
+    /**
+     * Fetch products by category ID
+     */
+    public function getProductsByCategory($cat_id) {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                WHERE p.product_cat = ?
+                ORDER BY p.product_id DESC";
+        $result = $this->fetchAll($sql, [$cat_id]);
+        return $result ? $result : [];
+    }
+
+    /**
+     * Fetch products by brand ID
+     */
+    public function getProductsByBrand($brand_id) {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                WHERE p.product_brand = ?
+                ORDER BY p.product_id DESC";
+        $result = $this->fetchAll($sql, [$brand_id]);
+        return $result ? $result : [];
+    }
+
+    /**
+     * Search products by title or keywords using prepared statements
+     */
+    public function searchProducts($query) {
+        $sql = "SELECT p.*, c.cat_name, b.brand_name 
+                FROM products p
+                LEFT JOIN categories c ON p.product_cat = c.cat_id
+                LEFT JOIN brands b ON p.product_brand = b.brand_id
+                WHERE p.product_title LIKE ? OR p.product_keywords LIKE ?
+                ORDER BY p.product_id DESC";
+        $searchTerm = '%' . $query . '%';
+        $result = $this->fetchAll($sql, [$searchTerm, $searchTerm]);
+        return $result ? $result : [];
+    }
+    
+    
 
 }
