@@ -81,9 +81,19 @@ class CartClass extends Database
     /**
      * Update quantity of an item in the cart
      */
-    public function updateCartQuantity($product_id, $qty,$ip)
+    public function updateCartQuantity($product_id, $new_qty,$ip)
     {
+        $new_qty = (int)$new_qty;
+        if ($new_qty < 1) {
+            return false;
+        }
+
         $sql = "UPDATE `cart` SET `qty` = ? WHERE `p_id` = ? AND `ip_add` = ?";
-        return $this->execute($sql, [$qty, $product_id,$ip]);
+        return $this->execute($sql, [$new_qty, (int)$product_id,$ip]);
+    }
+    //alias
+    public function updateQty($product_id, $new_qty,$ip)
+    {
+        return $this->updateCartQuantity($product_id, $new_qty,$ip);
     }
 }

@@ -43,6 +43,14 @@ class CartController
     {
         return $this->cartModel->updateCartQuantity($product_id, $qty, $ip);
     }
+    /**
+     * Update quantity of an item in the cart
+     * Calls CartClass -> updateQty()
+     */
+    public function updateQty($product_id, $new_qty, $ip)
+    {
+        return $this->cartModel->updateQty($product_id, $new_qty, $ip);
+    }
 }
 
 // Procedural helper functions matching typical lab controller style
@@ -85,4 +93,9 @@ function update_cart_quantity_ctr($product_id, $qty, $ip)
 {
     $cart = new CartClass();
     return $cart->updateCartQuantity($product_id, $qty, $ip);
+}
+function update_qty_ctr($product_id, $new_qty, $ip)
+{
+    $cart = new CartClass();
+    return $cart->updateQty($product_id, $new_qty, $ip);
 }
