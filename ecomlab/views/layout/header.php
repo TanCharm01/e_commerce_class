@@ -3,6 +3,15 @@
 if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
+
+// Go up two levels: from views/layout/ -> views/ -> ecomlab/ -> core/ or controllers/
+require_once __DIR__ . '/../../core/core.php';
+require_once __DIR__ . '/../../controllers/CartController.php';
+
+$ip = get_ip();
+$cartController = new CartController();
+$cart_count = $cartController->getCartCount($ip);
+$cart_total = $cartController->getCartTotal($ip);
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -54,6 +63,27 @@ if (session_status() === PHP_SESSION_NONE) {
             color: #f59e0b !important;
             font-weight: 600;
         }
+        /* Cart summary bar styling */
+        .cart-summary-bar {
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #e5e7eb;
+            padding: 0.6rem 2rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            color: #374151;
+        }
+        .cart-summary-bar a {
+            color: #2563eb;
+            text-decoration: none;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        .cart-summary-bar a:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -74,7 +104,6 @@ if (session_status() === PHP_SESSION_NONE) {
                     <li>
                         <a href="<?= BASE_URL; ?>/views/admin/dashboard.php" class="admin-link">Admin Dashboard</a>
                     </li>
-                    
                 <?php endif; ?>
 
                 <li>
@@ -96,3 +125,10 @@ if (session_status() === PHP_SESSION_NONE) {
         </ul>
     </nav>
 </header>
+
+<!-- Task 11 Cart Summary Bar -->
+<div class="cart-summary-bar">
+    <span>
+        Shopping Cart — Total Items: <strong><?= $cart_count; ?></strong> | Total Price: <strong>$<?= number_format($cart_total, 2); ?></strong> | <a href="<?= BASE_URL; ?>/views/cart.php">Go to Cart</a>
+    </span>
+</div>
