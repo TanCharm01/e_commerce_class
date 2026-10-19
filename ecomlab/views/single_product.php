@@ -54,10 +54,10 @@ require_once __DIR__ . '/layout/header.php';
                 </div>
             <?php endif; ?>
 
-            <a href="<?= BASE_URL; ?>/index.php?add_cart=<?= urlencode($product['product_id']); ?>" 
-               style="display: inline-block; background: #2563eb; color: #fff; padding: 0.85rem 2rem; border-radius: 6px; text-decoration: none; font-weight: 600; font-size: 1.05rem;">
-               Add to Cart
-            </a>
+<a href="<?= BASE_URL; ?>/actions/add_to_cart_action.php?add_cart=<?= urlencode($product['product_id']); ?>" 
+   style="flex: 1; text-align: center; background: #2563eb; color: #fff; padding: 0.5rem; border-radius: 4px; text-decoration: none; font-size: 0.9rem; font-weight: 600;">
+    Add to Cart
+</a>
         </div>
     </main>
 </div>
