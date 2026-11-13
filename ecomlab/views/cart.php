@@ -92,7 +92,7 @@ $subtotal = 0.0;
             <button type="submit" form="remove-cart-form" style="background-color: #ef4444; color: #ffffff; border: none; padding: 0.6rem 1.2rem; border-radius: 4px; cursor: pointer;">Remove Selected</button>
             <button type="submit" form="update-cart-form" style="background-color: #4b5563; color: #ffffff; border: none; padding: 0.6rem 1.2rem; border-radius: 4px; cursor: pointer;">Update Quantities</button>
             <a href="<?= BASE_URL; ?>/views/home.php" style="display: inline-block; background-color: #e5e7eb; color: #1f2937; padding: 0.6rem 1.2rem; border-radius: 4px; text-decoration: none;">Continue Shopping</a>
-            <a href="<?= BASE_URL; ?>/views/checkout.php" style="display: inline-block; background-color: #10b981; color: #ffffff; padding: 0.6rem 1.2rem; border-radius: 4px; text-decoration: none; font-weight: 600;">Checkout</a>
+            <a href="<?= BASE_URL; ?>/views/payment.php" style="display: inline-block; background-color: #10b981; color: #ffffff; padding: 0.6rem 1.2rem; border-radius: 4px; text-decoration: none; font-weight: 600;">Checkout</a>
         </div>
     <?php endif; ?>
 </main>

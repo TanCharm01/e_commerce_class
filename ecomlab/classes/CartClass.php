@@ -96,4 +96,89 @@ class CartClass extends Database
     {
         return $this->updateCartQuantity($product_id, $new_qty,$ip);
     }
+    /**
+     * Process payment inside a database transaction
+     */
+    public function processPayment($customer_id,$ip, $reference,$amount) {
+        try {
+            // 1. Fetch current cart items for this IP
+            $cartSql = "SELECT p_id, qty FROM cart WHERE ip_add = ?";
+            $cartItems =$this->fetchAll($cartSql, [$ip]);
+
+            if (empty($cartItems)) {
+                return false;
+            }
+
+            // Use underlying PDO connection if exposed by db_connection
+            $pdo = $this->db ?? $this->conn ?? null;
+            if ($pdo instanceof PDO) {$pdo->beginTransaction();
+            }
+
+            // 2. Generate 6-digit invoice number
+            $invoice_no = mt_rand(100000, 999999);
+
+            // 3. Insert into orders table
+            $orderSql = "INSERT INTO orders (customer_id, invoice_no, order_date, order_status, created_at) 
+                         VALUES (?, ?, CURDATE(), 'paid', NOW())";
+            $this->execute($orderSql, [$customer_id,$invoice_no]);
+
+            // Retrieve the newly generated order_id
+            if ($pdo instanceof PDO) {
+                $order_id =$pdo->lastInsertId();
+            } else {
+                $row =$this->fetchOne("SELECT order_id FROM orders WHERE invoice_no = ? ORDER BY order_id DESC LIMIT 1", [$invoice_no]);
+                $order_id =$row['order_id'] ?? false;
+            }
+
+            if (!$order_id) {
+                if ($pdo instanceof PDO && $pdo->inTransaction()) {$pdo->rollBack();
+                }
+                return false;
+            }
+
+            // 4. Copy cart rows into orderdetails table
+            $detailSql = "INSERT INTO orderdetails (order_id, product_id, qty) VALUES (?, ?, ?)";
+            foreach ($cartItems as $item) {$this->execute($detailSql, [$order_id, $item['p_id'],$item['qty']]);
+            }
+
+            // 5. Clear cart rows for this IP
+            $deleteSql = "DELETE FROM cart WHERE ip_add = ?";
+            $this->execute($deleteSql, [$ip]);
+
+            if ($pdo instanceof PDO && $pdo->inTransaction()) {$pdo->commit();
+            }
+
+            return $order_id;
+
+        } catch (Exception $e) {$pdo = $this->db ?? $this->conn ?? null;
+            if ($pdo instanceof PDO && $pdo->inTransaction()) {$pdo->rollBack();
+            }
+            return false;
+        }
+    }
+
+    /**
+     * Fetch order header and joined line items with product details
+     */
+    public function getOrderById($order_id) {$orderSql = "SELECT o.*, c.customer_name, c.customer_email 
+                     FROM orders o
+                     LEFT JOIN customer c ON o.customer_id = c.customer_id
+                     WHERE o.order_id = ? 
+                     LIMIT 1";
+        $order =$this->fetchOne($orderSql, [$order_id]);
+
+        if (!$order) {
+            return null;
+        }
+
+        $itemsSql = "SELECT od.product_id, od.qty, p.product_title, p.product_price, p.product_image
+                     FROM orderdetails od
+                     LEFT JOIN products p ON od.product_id = p.product_id
+                     WHERE od.order_id = ?";
+        $items =$this->fetchAll($itemsSql, [$order_id]);
+
+        $order['items'] = $items ? $items : [];
+        return $order;
+    }
+    
 }
